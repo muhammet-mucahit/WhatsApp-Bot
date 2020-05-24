@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from flask import Flask, request, jsonify, abort
 
@@ -6,11 +7,10 @@ from twilio.twiml.messaging_response import MessagingResponse
 
 app = Flask(__name__)
 
-# client credentials are read from TWILIO_ACCOUNT_SID and AUTH_TOKEN
 client = Client()
 
-# this is the Twilio sandbox testing number
-from_whatsapp_number = 'whatsapp:+14155238886'
+from_whatsapp_number = os.environ.get('FROM_WHATSAPP_NUMBER', '')
+to_whatsapp_number = os.environ.get('TO_WHATSAPP_NUMBER', '')
 
 
 @app.route('/')
@@ -40,13 +40,11 @@ def response_message():
 def send_message():
     body = request.get_json()
 
-    if body is None or 'phone_number' not in body or 'message' not in body:
+    if body is None or 'message' not in body:
         abort(400)
 
     try:
-        phone_number, message = body['phone_number'], body['message']
-
-        to_whatsapp_number = f'whatsapp:{phone_number}'
+        message = body['message']
         message = client.messages.create(body=message,
                                          from_=from_whatsapp_number,
                                          to=to_whatsapp_number)
@@ -56,8 +54,6 @@ def send_message():
         })
     except:
         abort(422)
-
-    return jsonify({'success': True})
 
 
 if __name__ == '__main__':
