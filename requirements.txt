@@ -1,4 +1,5 @@
 Flask==1.1.2
 python-dotenv==0.13.0
 requests==2.23.0
-twilio==6.40.0
+twilio==6.40.0aa
+gunicorn==20.0.4
